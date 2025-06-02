@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Add specific styles for single product page here or in style.css */
+        #prodetails {
+            display: flex;
+            margin-top: 20px;
+            padding: 40px 80px;
+            justify-content: center; /* Center content */
+            align-items: flex-start; /* Align items to the top */
+            flex-wrap: wrap; /* Allow wrapping on smaller screens */
+        }
+        #prodetails .single-pro-image {
+            width: 40%;
+            margin-right: 50px;
+            text-align: center; /* Center image */
+        }
+        #main-img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+            padding: 5px;
+        }
+        .small-img-group {
+            display: flex;
+            justify-content: center; /* Center small images */
+            margin-top: 10px;
+            gap: 10px;
+        }
+        .small-img-col {
+            flex-basis: 24%; /* Approx 4 images per row */
+            cursor: pointer;
+        }
+        .small-img-col img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #eee;
+        }
+        #prodetails .single-pro-details {
+            width: 50%;
+            padding-top: 30px;
+        }
+        #prodetails .single-pro-details h4 {
+            padding: 40px 0 20px 0;
+        }
+        #prodetails .single-pro-details h2 {
+            font-size: 26px;
+        }
+        #prodetails .single-pro-details select {
+            display: block;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+        }
+        #prodetails .single-pro-details input {
+            width: 50px;
+            height: 47px;
+            padding-left: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            border: 1px solid #e2e9e1;
+        }
+        #prodetails .single-pro-details button {
+            background-color: #088178;
+            color: #fff;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #prodetails .single-pro-details span {
+            line-height: 25px;
+        }
+        /* Cart badge for header */
+        #lg-bag {
+            position: relative;
+        }
+        #cart-count {
+            position: absolute;
+            top: -5px;
+            right: -10px;
+            background-color: #088178;
+            color: white;
+            border-radius: 50%;
+            padding: 3px 7px;
+            font-size: 0.7em;
+            line-height: 1;
+            display: none;
+            min-width: 15px;
+            text-align: center;
+        }
+        @media (max-width: 799px) {
+            #prodetails {
+                flex-direction: column;
+                align-items: center;
+            }
+            #prodetails .single-pro-image {
+                width: 100%;
+                margin-right: 0;
+            }
+            #prodetails .single-pro-details {
+                width: 100%;
+                padding-top: 20px;
+            }
+            #cart, #cart-add {
+                padding: 40px 20px;
+            }
+        }
+    </style>
+</head>
+<body id="sproduct-page"> <section id="header">
+        <a href="#"><img src="img/logo.png" class="logo" alt=""></a>
+
+        <div>
+            <ul id="navbar">
+                <a href="#" id="close"><i class='fa fa-close'></i></a>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="blog.html">Blog</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li id="lg-bag">
+                    <a href="cart.html"><i class="fa fa-shopping-bag" aria-hidden="true"></i></a>
+                    <span id="cart-count">0</span> </li>
+            </ul>
+        </div>
+        <div id="mobile">
+            <a href="cart.html"><i class="fa fa-shopping-bag" aria-hidden="true"></i></a>
+            <i id="bar" class="fa fa-bars" aria-hidden="true"></i>      
+        </div>
+    </section>
+
+    <section id="prodetails" class="section-p1">
+        <div class="single-pro-image">
+            <img src="img/products/f1.jpg" width="100%" id="main-img" alt="Main Product Image">
+            <div class="small-img-group">
+                <div class="small-img-col">
+                    <img src="img/products/f1.jpg" width="100%" class="small-img" alt="">
+                </div>
+                <div class="small-img-col">
+                    <img src="img/products/f2.jpg" width="100%" class="small-img" alt="">
+                </div>
+                <div class="small-img-col">
+                    <img src="img/products/f3.jpg" width="100%" class="small-img" alt="">
+                </div>
+                <div class="small-img-col">
+                    <img src="img/products/f4.jpg" width="100%" class="small-img" alt="">
+                </div>
+            </div>
+        </div>
+
+        <div class="single-pro-details">
+            <h6>Home / <span id="product-brand">T-Shirt</span></h6>
+            <h4 id="product-name">Men's Fashion T-Shirt</h4>
+            <h2 id="product-price">$78.00</h2>
+            <select>
+                <option>Select Size</option>
+                <option>XL</option>
+                <option>XXL</option>
+                <option>Small</option>
+                <option>Large</option>
+            </select>
+            <input type="number" value="1" min="1" id="product-quantity">
+            <button class="normal" id="single-product-add-to-cart">Add To Cart</button>
+            <h4>Product Details</h4>
+            <span>The Cotton-Blend T-Shirt is a versatile and comfortable garment made from a soft blend of cotton and synthetic fibers, offering breathability and durability. Its classic design and relaxed fit make it suitable for everyday wear, while its easy-care properties ensure convenience for the modern lifestyle.</span>
+        </div>
+    </section>
+
+    <section id="product1" class="section-p1">
+        <h2>You Might Also Like</h2>
+        <p>Related Products</p>
+        <div class="pro-container" id="related-products-container">
+            <div class="pro">
+                <img src="img/products/n1.jpg" alt="">
+                <div class="des">
+                    <span>Adiddas</span>
+                    <h5>Cotton shirts pure cotton</h5>
+                    <div class="star">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>$78</h4>
+                </div>
+                <a href="#" ><i class="fa-sharp fa-solid fa-cart-shopping"></i></a>
+            </div>
+            <div class="pro">
+                <img src="img/products/n2.jpg" alt="">
+                <div class="des">
+                    <span>Adiddas</span>
+                    <h5>Cotton shirts pure cotton</h5>
+                    <div class="star">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>$78</h4>
+                </div>
+                <a href="#" ><i class="fa-sharp fa-solid fa-cart-shopping"></i></a>
+            </div>
+             <div class="pro">
+                <img src="img/products/n3.jpg" alt="">
+                <div class="des">
+                    <span>Adiddas</span>
+                    <h5>Cotton shirts pure cotton</h5>
+                    <div class="star">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>$78</h4>
+                </div>
+                <a href="#" ><i class="fa-sharp fa-solid fa-cart-shopping"></i></a>
+            </div>
+            <div class="pro">
+                <img src="img/products/n4.jpg" alt="">
+                <div class="des">
+                    <span>Adiddas</span>
+                    <h5>Cotton shirts pure cotton</h5>
+                    <div class="star">
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h4>$78</h4>
+                </div>
+                <a href="#" ><i class="fa-sharp fa-solid fa-cart-shopping"></i></a>
+            </div>
+        </div>
+    </section>
+
+    <section id="newsletter" class="section-p1 section-m1">
+        <div class="newstext">
+            <h4>Sign uP for newsletters</h4>
+            <p>Lorem ipsum dolor sit amet <span>consectetur</span>.</p>
+        </div>
+        <div class="form">
+            <input type="text" placeholder="your email address">
+            <button class="normal">Sign Up</button>
+        </div>
+    </section>
+
+   <footer class="section-p1">
+    <div class="col">
+        <img class="logo" src="img/logo.png" alt="">
+        <h4>Contact</h4>
+        <p><strong>Address :</strong> Lorem ipsum dolor sit</p>
+        <p><strong>Phone :</strong> 13569876540</p>
+        <p><strong>Hours :</strong> 5hoai</p>
+        <div class="follow">
+            <h4>Follow Us</h4>
+            <div class="icon">
+                <i class="fab fa-facebook-f"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-pinterest-p"></i>
+                <i class="fab fa-youtube"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <h4>About</h4>
+        <a href="#">About US</a>
+        <a href="#">Delivery Information</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms & Conditions</a>
+        <a href="#">Contact Us</a>
+        <a href="#">About US</a>
+    </div>
+
+    <div class="col">
+        <h4>MY Account</h4>
+        <a href="#">Sign In</a>
+        <a href="#">View Cart</a>
+        <a href="#">My Wishlist</a>
+        <a href="#">Track My Order</a>
+        <a href="#">Help</a>
+    </div>
+
+    <div class="col install">
+        <h4>Install App</h4>
+        <p>From app store or Google PLay Store</p>
+        <div class="row">
+            <img src="img/pay/app.jpg" alt="">
+            <img src="img/pay/play.jpg" alt="">
+        </div>
+        <p>Secured payment Gateways</p>
+        <img src="img/pay/pay.png" alt="">
+    </div>
+
+    <div class="copyright">
+        <p>Ecommerce Website Template</p>
+    </div>
+
+   </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
