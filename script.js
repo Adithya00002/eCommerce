@@ -3,6 +3,62 @@ const bar = document.getElementById('bar');
 const close = document.getElementById('close');
 const nav = document.getElementById('navbar');
 
+// --- Start of Contact Form Tracking Code ---
+// Ensure the elements are available when this script runs.
+// This assumes your input fields have the IDs 'name', 'email', 'inquiry_category', 'message' as implied by your friend's snippet.
+// Your contact.html has the form with id="contactForm"
+// It also has a 'Submit' button
+
+document.addEventListener('DOMContentLoaded', function() {
+    // These lines to get elements should be part of the form submission handling
+    // However, ensure your HTML input elements have these specific IDs.
+    // Based on contact.html, the input fields don't have IDs like 'name', 'email', 'inquiry_category'.
+    // You will need to add IDs to your input fields for these lines to work:
+    // <input type="text" placeholder="Enter your name" id="name">
+    // <input type="text" placeholder="Enter your Email" id="email">
+    // <input type="text" placeholder="Enter your Subjext" id="inquiry_category"> (or a select dropdown for category)
+    // <textarea name="" id="message" cols="30" rows="10" placeholder="Your Message"></textarea>
+
+    let Nameval = document.getElementById('name');
+    let Emailval = document.getElementById('email');
+    let Inq_cat = document.getElementById('inquiry_category'); // This input is for 'Subject' in your HTML. Consider renaming ID or parameter name if needed.
+    let Messageval = document.getElementById('message');
+
+    const contactForm = document.getElementById('contactForm'); // Your form's ID
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevents default form submission, which might be handled by an AJAX call or redirected later.
+
+            // The console.log is for debugging and can be removed in production
+            if (Nameval && Emailval && Inq_cat && Messageval) { // Check if elements exist before accessing .value
+                console.log(Nameval.value, Emailval.value, Inq_cat.value, Messageval.value);
+            }
+
+            let charactersInMessage = Messageval ? Messageval.value.length : 0; // Check if Messageval exists
+
+            gtag('event', 'contact_form_submit', {
+                inquiry_category: Inq_cat ? Inq_cat.value : 'N/A', // Send inquiry category if element exists
+                characters_in_message: charactersInMessage,
+                submission_count: 1, // Static parameter, indicating one submission
+                form_id: 'contactForm', // ID of the form
+                form_name: 'Contact Us Form', // Descriptive name for the form
+                page_location: window.location.href // Current page URL
+            });
+
+            // If your form submits normally (not via AJAX) and redirects,
+            // you might need to re-submit the form after the gtag call:
+            // contactForm.submit();
+            // Or ensure your backend logic handles the redirect after successful submission,
+            // giving gtag enough time to send the hit.
+
+            // If your form uses AJAX, you would typically trigger this gtag call
+            // upon a successful AJAX response to confirm submission.
+        });
+    }
+});
+// --- End of Contact Form Tracking Code ---
+
 if (bar) {
     bar.addEventListener('click', () => {
         nav.classList.add('active');
