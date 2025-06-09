@@ -4,10 +4,7 @@ const close = document.getElementById('close');
 const nav = document.getElementById('navbar');
 
 // --- Start of Contact Form Tracking Code ---
-// Ensure the elements are available when this script runs.
-// This assumes your input fields have the IDs 'name', 'email', 'inquiry_category', 'message' as implied by your friend's snippet.
-// Your contact.html has the form with id="contactForm"
-// It also has a 'Submit' button
+
 
 document.addEventListener('DOMContentLoaded', function() {
     // These lines to get elements should be part of the form submission handling
@@ -58,6 +55,65 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 // --- End of Contact Form Tracking Code ---
+
+// --- Start of Checkout Purchase Tracking Code ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure this runs only on the cart page (or the page where checkout button is clicked)
+    if (document.getElementById('cart-page')) { // Your <body> has id="cart-page"
+        const checkoutButton = document.querySelector('#subtotal .checkout-btn'); // Get the checkout button
+
+        if (checkoutButton) {
+            checkoutButton.addEventListener('click', function(event) {
+                // Prevent default behavior if this button is part of an AJAX submission
+                // event.preventDefault();
+
+                // Ensure the 'cart' object is available from script.js
+                if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
+                    console.warn("Cart is empty or not available. Cannot send purchase event.");
+                    return;
+                }
+
+                let purchaseItems = [];
+                for (const productId in cart) {
+                    const item = cart[productId];
+                    purchaseItems.push({
+                        item_id: item.id,
+                        item_name: item.name,
+                        item_brand: item.brand,
+                        price: item.price,
+                        quantity: item.quantity
+                    });
+                }
+
+                // Get totals from your displayed cart
+                const subtotalElement = document.getElementById('cart-subtotal');
+                const shippingElement = document.getElementById('cart-shipping');
+                const grandTotalElement = document.getElementById('cart-grand-total');
+
+                const subtotal = parseFloat(subtotalElement ? subtotalElement.textContent.replace('$', '') : 0);
+                const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
+                const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
+
+                // IMPORTANT: Replace 'INR' with your actual currency code (e.g., 'USD', 'EUR')
+                // IMPORTANT: transaction_id should ideally come from your backend after a successful order.
+                // The current Date.now() + random is a placeholder for client-side testing.
+                gtag('event', 'purchase', {
+                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
+                    value: grandTotal, // Total value of the purchase
+                    currency: 'INR', // <--- REPLACE THIS WITH YOUR CURRENCY CODE (e.g., 'USD', 'EUR')
+                    tax: (grandTotal - subtotal - shipping), // Calculated tax (approx)
+                    shipping: shipping, // Shipping cost
+                    items: purchaseItems // Array of purchased items
+                });
+
+                // If clicking 'Proceed to checkout' redirects to a payment gateway,
+                // the actual 'purchase' event is often best placed on the final 'Thank You' or 'Order Confirmation' page.
+                // If it's the final action on this page, ensure the gtag call is robust enough to send before navigation.
+            });
+        }
+    }
+});
+// --- End of Checkout Purchase Tracking Code ---
 
 if (bar) {
     bar.addEventListener('click', () => {
