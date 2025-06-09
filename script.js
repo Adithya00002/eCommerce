@@ -3,39 +3,29 @@ const bar = document.getElementById('bar');
 const close = document.getElementById('close');
 const nav = document.getElementById('navbar');
 
-// --- Start of Contact Form Tracking Code ---
-
-
+// --- Start of MODIFIED Contact Form Tracking Code ---
 document.addEventListener('DOMContentLoaded', function() {
-    // These lines to get elements should be part of the form submission handling
-    // However, ensure your HTML input elements have these specific IDs.
-    // Based on contact.html, the input fields don't have IDs like 'name', 'email', 'inquiry_category'.
-    // You will need to add IDs to your input fields for these lines to work:
-    // <input type="text" placeholder="Enter your name" id="name">
-    // <input type="text" placeholder="Enter your Email" id="email">
-    // <input type="text" placeholder="Enter your Subjext" id="inquiry_category"> (or a select dropdown for category)
-    // <textarea name="" id="message" cols="30" rows="10" placeholder="Your Message"></textarea>
-
+    // Ensure the elements are available when this script runs.
+    // Make sure your input fields have the IDs 'name', 'email', 'inquiry_category', 'message' in contact.html
     let Nameval = document.getElementById('name');
     let Emailval = document.getElementById('email');
-    let Inq_cat = document.getElementById('inquiry_category'); // This input is for 'Subject' in your HTML. Consider renaming ID or parameter name if needed.
+    let Inq_cat = document.getElementById('inquiry_category');
     let Messageval = document.getElementById('message');
 
     const contactForm = document.getElementById('contactForm'); // Your form's ID
 
     if (contactForm) {
         contactForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Prevents default form submission, which might be handled by an AJAX call or redirected later.
+            // DO NOT use e.preventDefault() here if you want the page to refresh immediately after alert.
+            // The default form submission will handle the page refresh.
 
-            // The console.log is for debugging and can be removed in production
-            if (Nameval && Emailval && Inq_cat && Messageval) { // Check if elements exist before accessing .value
-                console.log(Nameval.value, Emailval.value, Inq_cat.value, Messageval.value);
-            }
+            // Get values (with checks in case elements don't exist for some reason)
+            let charactersInMessage = Messageval ? Messageval.value.length : 0;
+            let inquiryCategoryValue = Inq_cat ? Inq_cat.value : 'N/A';
 
-            let charactersInMessage = Messageval ? Messageval.value.length : 0; // Check if Messageval exists
-
+            // Send Google Analytics event
             gtag('event', 'contact_form_submit', {
-                inquiry_category: Inq_cat ? Inq_cat.value : 'N/A', // Send inquiry category if element exists
+                inquiry_category: inquiryCategoryValue,
                 characters_in_message: charactersInMessage,
                 submission_count: 1, // Static parameter, indicating one submission
                 form_id: 'contactForm', // ID of the form
@@ -43,77 +33,96 @@ document.addEventListener('DOMContentLoaded', function() {
                 page_location: window.location.href // Current page URL
             });
 
-            // If your form submits normally (not via AJAX) and redirects,
-            // you might need to re-submit the form after the gtag call:
-            // contactForm.submit();
-            // Or ensure your backend logic handles the redirect after successful submission,
-            // giving gtag enough time to send the hit.
+            // Display the alert message
+            alert('Submitted');
 
-            // If your form uses AJAX, you would typically trigger this gtag call
-            // upon a successful AJAX response to confirm submission.
+            // IMPORTANT:
+            // Since you want the page to refresh, we are *not* calling e.preventDefault().
+            // The default form submission will proceed automatically after the alert() is dismissed.
+            // If your form is intended to submit to a specific action (e.g., PHP script),
+            // ensure your <form action="your_backend_script.php" method="POST"> is correctly set up.
         });
     }
+    // ... rest of your existing DOMContentLoaded code
 });
-// --- End of Contact Form Tracking Code ---
+// --- End of MODIFIED Contact Form Tracking Code ---
 
-// --- Start of Checkout Purchase Tracking Code ---
+// --- Start of MODIFIED Checkout Purchase Tracking Code ---
 document.addEventListener('DOMContentLoaded', function() {
-    // Ensure this runs only on the cart page (or the page where checkout button is clicked)
-    if (document.getElementById('cart-page')) { // Your <body> has id="cart-page"
-        const checkoutButton = document.querySelector('#subtotal .checkout-btn'); // Get the checkout button
+  // ... (your existing code before the cart page specific block)
 
-        if (checkoutButton) {
-            checkoutButton.addEventListener('click', function(event) {
-                // Prevent default behavior if this button is part of an AJAX submission
-                // event.preventDefault();
+  // For cart.html - specifically for the 'Proceed to checkout' button
+  if (document.getElementById('cart-page')) { // Ensure we are on the cart page by checking body ID
+    renderCartTable(); // Your existing function call
 
-                // Ensure the 'cart' object is available from script.js
-                if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
-                    console.warn("Cart is empty or not available. Cannot send purchase event.");
-                    return;
-                }
-
-                let purchaseItems = [];
-                for (const productId in cart) {
-                    const item = cart[productId];
-                    purchaseItems.push({
-                        item_id: item.id,
-                        item_name: item.name,
-                        item_brand: item.brand,
-                        price: item.price,
-                        quantity: item.quantity
-                    });
-                }
-
-                // Get totals from your displayed cart
-                const subtotalElement = document.getElementById('cart-subtotal');
-                const shippingElement = document.getElementById('cart-shipping');
-                const grandTotalElement = document.getElementById('cart-grand-total');
-
-                const subtotal = parseFloat(subtotalElement ? subtotalElement.textContent.replace('$', '') : 0);
-                const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
-                const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
-
-                // IMPORTANT: Replace 'INR' with your actual currency code (e.g., 'USD', 'EUR')
-                // IMPORTANT: transaction_id should ideally come from your backend after a successful order.
-                // The current Date.now() + random is a placeholder for client-side testing.
-                gtag('event', 'purchase', {
-                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
-                    value: grandTotal, // Total value of the purchase
-                    currency: 'INR', // <--- REPLACE THIS WITH YOUR CURRENCY CODE (e.g., 'USD', 'EUR')
-                    tax: (grandTotal - subtotal - shipping), // Calculated tax (approx)
-                    shipping: shipping, // Shipping cost
-                    items: purchaseItems // Array of purchased items
-                });
-
-                // If clicking 'Proceed to checkout' redirects to a payment gateway,
-                // the actual 'purchase' event is often best placed on the final 'Thank You' or 'Order Confirmation' page.
-                // If it's the final action on this page, ensure the gtag call is robust enough to send before navigation.
-            });
-        }
+    // Add event listener for coupon button only on the cart page
+    const applyCouponBtn = document.querySelector('#coupon button');
+    if (applyCouponBtn) {
+      const couponInput = document.querySelector('#coupon input');
+      if (couponInput) {
+        couponInput.id = 'coupon-input';
+      }
+      applyCouponBtn.addEventListener('click', applyCoupon);
     }
+
+    const checkoutButton = document.querySelector('#subtotal .checkout-btn'); // Get the checkout button
+
+    if (checkoutButton) {
+      checkoutButton.addEventListener('click', function(event) {
+        // DO NOT use event.preventDefault() here if you want the button's default action (navigation/refresh) to proceed.
+
+        // Ensure the 'cart' object is available and populated.
+        if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
+          console.warn("Cart is empty or not available. Cannot send purchase event.");
+          alert('Cart is empty!'); // Optionally alert if cart is empty
+          return;
+        }
+
+        let purchaseItems = [];
+        for (const productId in cart) {
+          const item = cart[productId];
+          purchaseItems.push({
+            item_id: item.id,
+            item_name: item.name,
+            item_brand: item.brand,
+            price: item.price,
+            quantity: item.quantity
+          });
+        }
+
+        const subtotalElement = document.getElementById('cart-subtotal');
+        const shippingElement = document.getElementById('cart-shipping');
+        const grandTotalElement = document.getElementById('cart-grand-total');
+
+        const subtotal = parseFloat(subtotalElement ? subtotalElement.textContent.replace('$', '') : 0);
+        const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
+        const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
+
+        // Send Google Analytics event
+        gtag('event', 'purchase', {
+          transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
+          value: grandTotal,
+          currency: 'INR', // <--- REPLACE THIS WITH YOUR CURRENCY CODE (e.g., 'USD', 'EUR')
+          tax: (grandTotal - subtotal - shipping),
+          shipping: shipping,
+          items: purchaseItems
+        });
+
+        // Display the alert message
+        alert('Proceeding to checkout!');
+
+        // IMPORTANT:
+        // Since you want the page to refresh/navigate, we are *not* calling event.preventDefault().
+        // The default action of the button (e.g., if it's a link, or a form submit button)
+        // will proceed automatically after the alert() is dismissed.
+        // If your checkout button is part of a <form> with an action, that action will execute.
+        // If it's just a link to the next page, it will navigate.
+      });
+    }
+  }
+  // ... rest of your existing DOMContentLoaded code
 });
-// --- End of Checkout Purchase Tracking Code ---
+// --- End of MODIFIED Checkout Purchase Tracking Code ---
 
 if (bar) {
     bar.addEventListener('click', () => {
