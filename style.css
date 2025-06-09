@@ -136,6 +136,94 @@ body {
 
 /* Home Page*/
 
+/* Add these styles to your style.css file */
+
+#hero-video {
+    position: relative; /* Allows child elements to be positioned relative to this section */
+    width: 100%;
+    height: 100vh; /* Make it full viewport height */
+    overflow: hidden; /* Hide any overflow from the video */
+    display: flex; /* Use flexbox to center content */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+    text-align: center; /* Center text within the content div */
+    color: #fff; /* Example: text color over video */
+}
+
+#banner-video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* This is key: scales the video to cover the entire container */
+    z-index: -1; /* Puts the video behind the content */
+}
+
+.hero-content {
+    position: relative; /* Ensure content is on top of the video */
+    z-index: 1; /* Bring content forward */
+    /* Add padding if needed to prevent content from touching edges on smaller screens */
+    padding: 20px; 
+}
+
+/* You will likely need to adjust existing styles for h1, h2, h4, p, button, .to-top 
+   that were previously applied to #hero to now apply to .hero-content or its children.
+   For example, if #hero h2 had specific styles, you might need to change it to .hero-content h2.
+*/
+
+/* Example adjustments for text if needed for visibility over video */
+#hero-video h4 {
+    color: #fff; /* Ensure text is visible over the video */
+    font-size: 20px; /* Example adjustment */
+}
+
+#hero-video h2 {
+    color: #fff;
+    font-size: 45px; /* Example adjustment */
+}
+
+#hero-video h1 {
+    color: #088178; /* Example specific color for H1 */
+    font-size: 50px; /* Example adjustment */
+}
+
+#hero-video p {
+    color: #fff;
+    font-size: 18px;
+}
+
+#hero-video button {
+    /* Ensure your button styles are appropriate for the video background */
+    background-color: #088178; /* Example background for the button */
+    color: #fff;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* Also adjust for the 'to-top' link if its position was relative to #hero */
+#hero-video .to-top {
+    position: absolute; /* Or relative, depending on desired behavior */
+    bottom: 20px; /* Example positioning */
+    right: 20px;
+    z-index: 2; /* Ensure it's above other content if needed */
+    color: #fff; /* Make sure it's visible */
+}
+
+/* Consider adding a transparent overlay to the video to improve text readability */
+#hero-video::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* Darkens the video slightly */
+    z-index: 0; /* Between video and content */
+}
+
 #hero {
   background-image: url("img/hero4.png");
   height: 90vh;
@@ -996,6 +1084,8 @@ th:last-child {
   color: #fff;
   /* margin-top: 0px; */
 }
+
+
 
 /* Start Media Query*/
 
