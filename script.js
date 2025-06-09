@@ -415,6 +415,8 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProducts('shop-product-container', products);
     }
 
+   // ... (rest of your script.js code above) ...
+
     // For cart.html
     if (document.getElementById('cart-table-body')) {
         renderCartTable();
@@ -429,19 +431,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Start of MODIFIED Checkout Purchase Tracking Code ---
-        // Ensure this runs only on the cart page (or the page where checkout button is clicked)
-        // Your <body> has id="cart-page"
-        const checkoutButton = document.querySelector('#subtotal .checkout-btn'); // Get the checkout button
+        const checkoutButton = document.querySelector('#subtotal .checkout-btn');
 
         if (checkoutButton) {
             checkoutButton.addEventListener('click', function(event) {
-                // DO NOT use event.preventDefault() here if you want the button's default action (navigation/refresh) to proceed.
+                // DO NOT use event.preventDefault() if you want the button's default action (navigation/refresh) to proceed.
 
                 // Ensure the 'cart' object is available and populated.
                 if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
                     console.warn("Cart is empty or not available. Cannot send purchase event.");
                     alert('Cart is empty!'); // Optionally alert if cart is empty
-                    return;
+                    return; // Stop execution if cart is empty
                 }
 
                 let purchaseItems = [];
@@ -464,7 +464,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
                 const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
 
-                // Send Google Analytics event
+                // 1. Send Google Analytics event (IMPORTANT: This must happen *before* clearing the cart)
                 gtag('event', 'purchase', {
                     transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
                     value: grandTotal,
@@ -474,19 +474,28 @@ document.addEventListener('DOMContentLoaded', () => {
                     items: purchaseItems
                 });
 
-                // Display the alert message
-                alert('Proceeding to checkout!');
+                // 2. Clear the cart after the purchase event is sent
+                cart = {}; // Clear the in-memory cart object
+                saveCart(); // Save the empty cart to localStorage and update UI
+
+                // 3. Display the "Thanks" alert
+                alert('Thanks for shopping with us!');
 
                 // IMPORTANT:
-                // Since you want the page to refresh/navigate, we are *not* calling event.preventDefault().
-                // The default action of the button (e.g., if it's a link, or a form submit button)
+                // The default action of the button (e.g., if it's a link to the next page, or a form submit button)
                 // will proceed automatically after the alert() is dismissed.
                 // If your checkout button is part of a <form> with an action, that action will execute.
-                // If it's just a link to the next page, it will navigate.
+                // If it's just a link to the next page, it will navigate to the next page, which means
+                // the cart page will "refresh" to a new page effectively being cleared.
+                // Make sure your checkout button either submits a form or navigates to a new page,
+                // otherwise the cart will be cleared but the user will remain on the cart page.
             });
         }
         // --- End of MODIFIED Checkout Purchase Tracking Code ---
     }
+
+
+// ... (rest of your script.js code below) ...
 
 
     // For blog.html
