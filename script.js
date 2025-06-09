@@ -3,127 +3,6 @@ const bar = document.getElementById('bar');
 const close = document.getElementById('close');
 const nav = document.getElementById('navbar');
 
-// --- Start of MODIFIED Contact Form Tracking Code ---
-document.addEventListener('DOMContentLoaded', function() {
-    // Ensure the elements are available when this script runs.
-    // Make sure your input fields have the IDs 'name', 'email', 'inquiry_category', 'message' in contact.html
-    let Nameval = document.getElementById('name');
-    let Emailval = document.getElementById('email');
-    let Inq_cat = document.getElementById('inquiry_category');
-    let Messageval = document.getElementById('message');
-
-    const contactForm = document.getElementById('contactForm'); // Your form's ID
-
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            // DO NOT use e.preventDefault() here if you want the page to refresh immediately after alert.
-            // The default form submission will handle the page refresh.
-
-            // Get values (with checks in case elements don't exist for some reason)
-            let charactersInMessage = Messageval ? Messageval.value.length : 0;
-            let inquiryCategoryValue = Inq_cat ? Inq_cat.value : 'N/A';
-
-            // Send Google Analytics event
-            gtag('event', 'contact_form_submit', {
-                inquiry_category: inquiryCategoryValue,
-                characters_in_message: charactersInMessage,
-                submission_count: 1, // Static parameter, indicating one submission
-                form_id: 'contactForm', // ID of the form
-                form_name: 'Contact Us Form', // Descriptive name for the form
-                page_location: window.location.href // Current page URL
-            });
-
-            // Display the alert message
-            alert('Submitted');
-
-            // IMPORTANT:
-            // Since you want the page to refresh, we are *not* calling e.preventDefault().
-            // The default form submission will proceed automatically after the alert() is dismissed.
-            // If your form is intended to submit to a specific action (e.g., PHP script),
-            // ensure your <form action="your_backend_script.php" method="POST"> is correctly set up.
-        });
-    }
-    // ... rest of your existing DOMContentLoaded code
-});
-// --- End of MODIFIED Contact Form Tracking Code ---
-
-// --- Start of MODIFIED Checkout Purchase Tracking Code ---
-document.addEventListener('DOMContentLoaded', function() {
-  // ... (your existing code before the cart page specific block)
-
-  // For cart.html - specifically for the 'Proceed to checkout' button
-  if (document.getElementById('cart-page')) { // Ensure we are on the cart page by checking body ID
-    renderCartTable(); // Your existing function call
-
-    // Add event listener for coupon button only on the cart page
-    const applyCouponBtn = document.querySelector('#coupon button');
-    if (applyCouponBtn) {
-      const couponInput = document.querySelector('#coupon input');
-      if (couponInput) {
-        couponInput.id = 'coupon-input';
-      }
-      applyCouponBtn.addEventListener('click', applyCoupon);
-    }
-
-    const checkoutButton = document.querySelector('#subtotal .checkout-btn'); // Get the checkout button
-
-    if (checkoutButton) {
-      checkoutButton.addEventListener('click', function(event) {
-        // DO NOT use event.preventDefault() here if you want the button's default action (navigation/refresh) to proceed.
-
-        // Ensure the 'cart' object is available and populated.
-        if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
-          console.warn("Cart is empty or not available. Cannot send purchase event.");
-          alert('Cart is empty!'); // Optionally alert if cart is empty
-          return;
-        }
-
-        let purchaseItems = [];
-        for (const productId in cart) {
-          const item = cart[productId];
-          purchaseItems.push({
-            item_id: item.id,
-            item_name: item.name,
-            item_brand: item.brand,
-            price: item.price,
-            quantity: item.quantity
-          });
-        }
-
-        const subtotalElement = document.getElementById('cart-subtotal');
-        const shippingElement = document.getElementById('cart-shipping');
-        const grandTotalElement = document.getElementById('cart-grand-total');
-
-        const subtotal = parseFloat(subtotalElement ? subtotalElement.textContent.replace('$', '') : 0);
-        const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
-        const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
-
-        // Send Google Analytics event
-        gtag('event', 'purchase', {
-          transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
-          value: grandTotal,
-          currency: 'INR', // <--- REPLACE THIS WITH YOUR CURRENCY CODE (e.g., 'USD', 'EUR')
-          tax: (grandTotal - subtotal - shipping),
-          shipping: shipping,
-          items: purchaseItems
-        });
-
-        // Display the alert message
-        alert('Proceeding to checkout!');
-
-        // IMPORTANT:
-        // Since you want the page to refresh/navigate, we are *not* calling event.preventDefault().
-        // The default action of the button (e.g., if it's a link, or a form submit button)
-        // will proceed automatically after the alert() is dismissed.
-        // If your checkout button is part of a <form> with an action, that action will execute.
-        // If it's just a link to the next page, it will navigate.
-      });
-    }
-  }
-  // ... rest of your existing DOMContentLoaded code
-});
-// --- End of MODIFIED Checkout Purchase Tracking Code ---
-
 if (bar) {
     bar.addEventListener('click', () => {
         nav.classList.add('active');
@@ -271,7 +150,7 @@ function saveCart() {
     localStorage.setItem('cart', JSON.stringify(cart));
     updateCartIcon();
     // Re-render cart table if on the cart page to reflect changes immediately
-    if (document.getElementById('cart-table-body')) { //
+    if (document.getElementById('cart-table-body')) {
         renderCartTable();
     }
 }
@@ -334,10 +213,10 @@ function updateCartQuantity(productId, quantity) {
 }
 
 function renderCartTable() {
-    const cartTableBody = document.querySelector('#cart-table-body'); //
-    const cartSubtotalElement = document.getElementById('cart-subtotal'); //
-    const cartShippingElement = document.getElementById('cart-shipping'); //
-    const cartTotalElement = document.getElementById('cart-grand-total'); //
+    const cartTableBody = document.querySelector('#cart-table-body');
+    const cartSubtotalElement = document.getElementById('cart-subtotal');
+    const cartShippingElement = document.getElementById('cart-shipping');
+    const cartTotalElement = document.getElementById('cart-grand-total');
 
     if (!cartTableBody || !cartSubtotalElement || !cartShippingElement || !cartTotalElement) return;
 
@@ -392,19 +271,19 @@ function renderCartTable() {
 
 // Function to apply coupon
 function applyCoupon() {
-    const couponInput = document.getElementById('coupon-input'); // Get the coupon input field
-    if (!couponInput) return; // Exit if element not found
+    const couponInput = document.getElementById('coupon-input');
+    if (!couponInput) return;
 
-    const couponCode = couponInput.value.trim().toUpperCase(); // Get and format the entered code
+    const couponCode = couponInput.value.trim().toUpperCase();
 
     if (couponCode === 'CODE50') {
-        couponApplied = true; // Set coupon status to true
-        alert('Coupon "CODE50" applied! You get 50% off.'); // Inform the user
+        couponApplied = true;
+        alert('Coupon "CODE50" applied! You get 50% off.');
     } else {
-        couponApplied = false; // Reset coupon status if invalid
-        alert('Invalid coupon code. Please try again.'); // Inform the user
+        couponApplied = false;
+        alert('Invalid coupon code. Please try again.');
     }
-    saveCart(); // Re-save cart and re-render table to reflect discount
+    saveCart();
 }
 
 // Function to render products on index and shop pages
@@ -453,7 +332,7 @@ const blogPosts = [
         title: 'The Cotton-Blend Sweatshirt',
         snippet: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed dignissimos exercitationem voluptatem quod earum dicta provident nam iure libero odit!',
         date: '13/01',
-        link: 'sblog.html?blogId=blog1' // Example link to a single blog post page
+        link: 'sblog.html?blogId=blog1'
     },
     {
         id: 'blog2',
@@ -499,11 +378,10 @@ const blogPosts = [
 
 // Function to render blog posts on the blog page
 function loadBlogPosts() {
-    const blogContainer = document.getElementById('blog-container'); //
+    const blogContainer = document.getElementById('blog-container');
     if (!blogContainer) return;
 
-    blogContainer.innerHTML = ''; // Clear existing content
-
+    blogContainer.innerHTML = '';
     blogPosts.forEach(post => {
         const blogBox = document.createElement('div');
         blogBox.classList.add('blog-box');
@@ -525,37 +403,133 @@ function loadBlogPosts() {
 // Initial calls based on the current page
 document.addEventListener('DOMContentLoaded', () => {
     // For index.html
-    if (document.getElementById('product-container-featured')) { //
+    if (document.getElementById('product-container-featured')) {
         renderProducts('product-container-featured', products.slice(0, 8));
     }
-    if (document.getElementById('product-container-new-arrivals')) { //
+    if (document.getElementById('product-container-new-arrivals')) {
         renderProducts('product-container-new-arrivals', products.slice(8, 16));
     }
 
     // For shop.html
-    if (document.getElementById('shop-product-container')) { //
+    if (document.getElementById('shop-product-container')) {
         renderProducts('shop-product-container', products);
     }
 
     // For cart.html
-    if (document.getElementById('cart-table-body')) { // Corrected ID from 'cart-table'
+    if (document.getElementById('cart-table-body')) {
         renderCartTable();
         // Add event listener for coupon button only on the cart page
-        const applyCouponBtn = document.querySelector('#coupon button'); //
+        const applyCouponBtn = document.querySelector('#coupon button');
         if (applyCouponBtn) {
-            // Find the input field within the #coupon div and assign it the correct ID
             const couponInput = document.querySelector('#coupon input');
             if (couponInput) {
                 couponInput.id = 'coupon-input';
             }
             applyCouponBtn.addEventListener('click', applyCoupon);
         }
+
+        // --- Start of MODIFIED Checkout Purchase Tracking Code ---
+        // Ensure this runs only on the cart page (or the page where checkout button is clicked)
+        // Your <body> has id="cart-page"
+        const checkoutButton = document.querySelector('#subtotal .checkout-btn'); // Get the checkout button
+
+        if (checkoutButton) {
+            checkoutButton.addEventListener('click', function(event) {
+                // DO NOT use event.preventDefault() here if you want the button's default action (navigation/refresh) to proceed.
+
+                // Ensure the 'cart' object is available and populated.
+                if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
+                    console.warn("Cart is empty or not available. Cannot send purchase event.");
+                    alert('Cart is empty!'); // Optionally alert if cart is empty
+                    return;
+                }
+
+                let purchaseItems = [];
+                for (const productId in cart) {
+                    const item = cart[productId];
+                    purchaseItems.push({
+                        item_id: item.id,
+                        item_name: item.name,
+                        item_brand: item.brand,
+                        price: item.price,
+                        quantity: item.quantity
+                    });
+                }
+
+                const subtotalElement = document.getElementById('cart-subtotal');
+                const shippingElement = document.getElementById('cart-shipping');
+                const grandTotalElement = document.getElementById('cart-grand-total');
+
+                const subtotal = parseFloat(subtotalElement ? subtotalElement.textContent.replace('$', '') : 0);
+                const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
+                const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
+
+                // Send Google Analytics event
+                gtag('event', 'purchase', {
+                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
+                    value: grandTotal,
+                    currency: 'INR', // <--- REPLACE THIS WITH YOUR CURRENCY CODE (e.g., 'USD', 'EUR')
+                    tax: (grandTotal - subtotal - shipping),
+                    shipping: shipping,
+                    items: purchaseItems
+                });
+
+                // Display the alert message
+                alert('Proceeding to checkout!');
+
+                // IMPORTANT:
+                // Since you want the page to refresh/navigate, we are *not* calling event.preventDefault().
+                // The default action of the button (e.g., if it's a link, or a form submit button)
+                // will proceed automatically after the alert() is dismissed.
+                // If your checkout button is part of a <form> with an action, that action will execute.
+                // If it's just a link to the next page, it will navigate.
+            });
+        }
+        // --- End of MODIFIED Checkout Purchase Tracking Code ---
     }
 
+
     // For blog.html
-    if (document.getElementById('blog-container')) { //
+    if (document.getElementById('blog-container')) {
         loadBlogPosts();
     }
 
     updateCartIcon(); // Update cart icon on all pages on load
 });
+
+
+// --- Start of Contact Form Tracking Code ---
+document.addEventListener('DOMContentLoaded', function() {
+    let Nameval = document.getElementById('name');
+    let Emailval = document.getElementById('email');
+    let Inq_cat = document.getElementById('inquiry_category');
+    let Messageval = document.getElementById('message');
+
+    const contactForm = document.getElementById('contactForm');
+
+    if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+            // DO NOT use e.preventDefault() here if you want the page to refresh immediately after alert.
+
+            if (Nameval && Emailval && Inq_cat && Messageval) {
+                console.log(Nameval.value, Emailval.value, Inq_cat.value, Messageval.value);
+            }
+
+            let charactersInMessage = Messageval ? Messageval.value.length : 0;
+            let inquiryCategoryValue = Inq_cat ? Inq_cat.value : 'N/A';
+
+            gtag('event', 'contact_form_submit', {
+                inquiry_category: inquiryCategoryValue,
+                characters_in_message: charactersInMessage,
+                submission_count: 1,
+                form_id: 'contactForm',
+                form_name: 'Contact Us Form',
+                page_location: window.location.href
+            });
+
+            // Display the alert message
+            alert('Submitted');
+        });
+    }
+});
+// --- End of Contact Form Tracking Code ---
