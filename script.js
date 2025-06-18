@@ -415,7 +415,15 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProducts('shop-product-container', products);
     }
 
-   // ... (rest of your script.js code above) ...
+
+
+
+
+
+
+
+
+    
 
     // For cart.html
     if (document.getElementById('cart-table-body')) {
@@ -430,18 +438,16 @@ document.addEventListener('DOMContentLoaded', () => {
             applyCouponBtn.addEventListener('click', applyCoupon);
         }
 
-        // --- Start of MODIFIED Checkout Purchase Tracking Code ---
+        // ---Checkout Purchase Tracking Code ---
         const checkoutButton = document.querySelector('#subtotal .checkout-btn');
 
         if (checkoutButton) {
             checkoutButton.addEventListener('click', function(event) {
-                // DO NOT use event.preventDefault() if you want the button's default action (navigation/refresh) to proceed.
 
-                // Ensure the 'cart' object is available and populated.
                 if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
                     console.warn("Cart is empty or not available. Cannot send purchase event.");
-                    alert('Cart is empty!'); // Optionally alert if cart is empty
-                    return; // Stop execution if cart is empty
+                    alert('Cart is empty!');
+                    return; 
                 }
 
                 let purchaseItems = [];
@@ -464,38 +470,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
                 const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
 
-                // 1. Send Google Analytics event (IMPORTANT: This must happen *before* clearing the cart)
                 gtag('event', 'purchase', {
-                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), // Placeholder: replace with actual unique order ID from backend
+                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), 
                     value: grandTotal,
-                    currency: 'INR', // <--- REPLACE THIS WITH YOUR CURRENCY CODE (e.g., 'USD', 'EUR')
+                    currency: 'INR', 
                     tax: (grandTotal - subtotal - shipping),
                     shipping: shipping,
                     items: purchaseItems
                 });
 
-                // 2. Clear the cart after the purchase event is sent
-                cart = {}; // Clear the in-memory cart object
-                saveCart(); // Save the empty cart to localStorage and update UI
-
-                // 3. Display the "Thanks" alert
+                cart = {};
+                saveCart();
                 alert('Thanks for shopping with us!');
-
-                // IMPORTANT:
-                // The default action of the button (e.g., if it's a link to the next page, or a form submit button)
-                // will proceed automatically after the alert() is dismissed.
-                // If your checkout button is part of a <form> with an action, that action will execute.
-                // If it's just a link to the next page, it will navigate to the next page, which means
-                // the cart page will "refresh" to a new page effectively being cleared.
-                // Make sure your checkout button either submits a form or navigates to a new page,
-                // otherwise the cart will be cleared but the user will remain on the cart page.
             });
         }
-        // --- End of MODIFIED Checkout Purchase Tracking Code ---
+        // --- Checkout Purchase Tracking Code ---
     }
-
-
-// ... (rest of your script.js code below) ...
 
 
     // For blog.html
@@ -503,11 +493,11 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBlogPosts();
     }
 
-    updateCartIcon(); // Update cart icon on all pages on load
+    updateCartIcon();
 });
 
 
-// --- Start of Contact Form Tracking Code ---
+// --- Contact Form Tracking Code ---
 document.addEventListener('DOMContentLoaded', function() {
     let Nameval = document.getElementById('name');
     let Emailval = document.getElementById('email');
@@ -536,9 +526,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 page_location: window.location.href
             });
 
-            // Display the alert message
+
             alert('Submitted');
         });
     }
 });
-// --- End of Contact Form Tracking Code ---
+
