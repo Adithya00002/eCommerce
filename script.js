@@ -426,17 +426,45 @@ document.addEventListener('DOMContentLoaded', () => {
     
 
     // For cart.html
-    if (document.getElementById('cart-table-body')) {
-        renderCartTable();
-        // Add event listener for coupon button only on the cart page
-        const applyCouponBtn = document.querySelector('#coupon button');
-        if (applyCouponBtn) {
-            const couponInput = document.querySelector('#coupon input');
-            if (couponInput) {
-                couponInput.id = 'coupon-input';
-            }
-            applyCouponBtn.addEventListener('click', applyCoupon);
+            // For cart.html (this is where we'll add our new code)
+        if (document.getElementById('cart-table-body')) {
+            // ... your existing cart.html specific code ...
         }
+    
+        // New code to add for tracking cart icon clicks
+        const cartIconLink = document.querySelector('#lg-bag a');
+        const mobileCartIconLink = document.querySelector('#mobile a'); // Also track the mobile cart icon
+    
+        function trackCartClick(event) {
+            // Prevent default navigation for a moment if needed, then allow it
+            // event.preventDefault(); // Uncomment if you want to delay navigation for tracking
+            
+            // Calculate total items at the moment of click
+            const currentCartTotalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+    
+            dataLayer.push({
+                'event': 'cart_icon_click',
+                'cart_items_count': currentCartTotalItems,
+                'cart_total_value': calculateCartSubtotal() // Optional: capture total value too
+            });
+    
+            // If you prevented default above, you'd re-direct here:
+            // window.location.href = event.currentTarget.href; 
+        }
+    
+        if (cartIconLink) {
+            cartIconLink.addEventListener('click', trackCartClick);
+        }
+        if (mobileCartIconLink) {
+            mobileCartIconLink.addEventListener('click', trackCartClick);
+        }
+        
+        // Helper function to calculate subtotal (if you want to send total value too)
+        function calculateCartSubtotal() {
+            return Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        }
+    
+        updateCartIcon(); // Ensure this is called initially to set up the badge
 
         // ---Checkout Purchase Tracking Code ---
         const checkoutButton = document.querySelector('#subtotal .checkout-btn');
