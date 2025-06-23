@@ -415,67 +415,29 @@ document.addEventListener('DOMContentLoaded', () => {
         renderProducts('shop-product-container', products);
     }
 
+    // For cart.html - This block contains logic ONLY relevant to the cart page
+    if (document.getElementById('cart-table-body')) {
+        renderCartTable(); // Renders the cart table on cart.html
 
-
-
-
-
-
-
-
-    
-
-    // For cart.html
-            // For cart.html (this is where we'll add our new code)
-        if (document.getElementById('cart-table-body')) {
-            // ... your existing cart.html specific code ...
+        // Add event listener for coupon button only on the cart page
+        const applyCouponBtn = document.querySelector('#coupon button');
+        if (applyCouponBtn) {
+            const couponInput = document.querySelector('#coupon input');
+            if (couponInput) {
+                couponInput.id = 'coupon-input';
+            }
+            applyCouponBtn.addEventListener('click', applyCoupon);
         }
-    
-        // New code to add for tracking cart icon clicks
-        const cartIconLink = document.querySelector('#lg-bag a');
-        const mobileCartIconLink = document.querySelector('#mobile a'); // Also track the mobile cart icon
-    
-        function trackCartClick(event) {
-            // Prevent default navigation for a moment if needed, then allow it
-            // event.preventDefault(); // Uncomment if you want to delay navigation for tracking
-            
-            // Calculate total items at the moment of click
-            const currentCartTotalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-    
-            dataLayer.push({
-                'event': 'cart_icon_click',
-                'cart_items_count': currentCartTotalItems,
-                'cart_total_value': calculateCartSubtotal() // Optional: capture total value too
-            });
-    
-            // If you prevented default above, you'd re-direct here:
-            // window.location.href = event.currentTarget.href; 
-        }
-    
-        if (cartIconLink) {
-            cartIconLink.addEventListener('click', trackCartClick);
-        }
-        if (mobileCartIconLink) {
-            mobileCartIconLink.addEventListener('click', trackCartClick);
-        }
-        
-        // Helper function to calculate subtotal (if you want to send total value too)
-        function calculateCartSubtotal() {
-            return Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        }
-    
-        updateCartIcon(); // Ensure this is called initially to set up the badge
 
-        // ---Checkout Purchase Tracking Code ---
+        // --- Checkout Purchase Tracking Code --- (Specific to cart.html where the checkout button is)
         const checkoutButton = document.querySelector('#subtotal .checkout-btn');
 
         if (checkoutButton) {
             checkoutButton.addEventListener('click', function(event) {
-
                 if (typeof cart === 'undefined' || Object.keys(cart).length === 0) {
                     console.warn("Cart is empty or not available. Cannot send purchase event.");
                     alert('Cart is empty!');
-                    return; 
+                    return;
                 }
 
                 let purchaseItems = [];
@@ -498,22 +460,59 @@ document.addEventListener('DOMContentLoaded', () => {
                 const shipping = parseFloat(shippingElement ? shippingElement.textContent.replace('$', '') : 0);
                 const grandTotal = parseFloat(grandTotalElement ? grandTotalElement.textContent.replace('$', '') : 0);
 
+                // Send purchase event to Google Analytics
                 gtag('event', 'purchase', {
-                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000), 
+                    transaction_id: 'T_' + Date.now() + Math.floor(Math.random() * 1000),
                     value: grandTotal,
-                    currency: 'INR', 
+                    currency: 'INR',
                     tax: (grandTotal - subtotal - shipping),
                     shipping: shipping,
                     items: purchaseItems
                 });
 
-                cart = {};
-                saveCart();
+                cart = {}; // Clear cart after purchase
+                saveCart(); // Update local storage
                 alert('Thanks for shopping with us!');
             });
         }
-        // --- Checkout Purchase Tracking Code ---
+        // --- End Checkout Purchase Tracking Code ---
+    } // End of cart.html specific block
+
+
+    // New code for tracking cart icon clicks (these apply to any page with the cart icon)
+    const cartIconLink = document.querySelector('#lg-bag a');
+    const mobileCartIconLink = document.querySelector('#mobile a'); // Also track the mobile cart icon
+
+    function trackCartClick(event) {
+        // event.preventDefault(); // Uncomment if you want to delay navigation for tracking
+
+        // Calculate total items at the moment of click
+        const currentCartTotalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+        const currentCartSubtotalValue = calculateCartSubtotal(); // Added for value tracking
+
+        dataLayer.push({
+            'event': 'cart_icon_click',
+            'cart_items_count': currentCartTotalItems,
+            'cart_total_value': currentCartSubtotalValue
+        });
+
+        // If you prevented default above, you'd re-direct here:
+        // window.location.href = event.currentTarget.href;
     }
+
+    if (cartIconLink) {
+        cartIconLink.addEventListener('click', trackCartClick);
+    }
+    if (mobileCartIconLink) {
+        mobileCartIconLink.addEventListener('click', trackCartClick);
+    }
+
+    // Helper function to calculate subtotal (if you want to send total value too)
+    function calculateCartSubtotal() {
+        return Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
+    updateCartIcon(); // Ensure this is called initially to set up the badge
 
 
     // For blog.html
@@ -521,8 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
         loadBlogPosts();
     }
 
-    updateCartIcon();
-});
+}); // This is the final closing brace for the main DOMContentLoaded event listener
 
 
 // --- Contact Form Tracking Code ---
